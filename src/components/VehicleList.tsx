@@ -175,19 +175,10 @@ const VehicleList = () => {
             </CardHeader>
             
             <CardContent className="space-y-4">
-              {/* Driver & Location */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-muted-foreground">Driver</div>
-                  <div className="font-medium">{vehicle.driver}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    Location
-                  </div>
-                  <div className="font-medium">{vehicle.location}</div>
-                </div>
+              {/* Driver */}
+              <div className="text-sm">
+                <div className="text-muted-foreground">Driver</div>
+                <div className="font-medium">{vehicle.driver}</div>
               </div>
 
               {/* Metrics */}
@@ -221,8 +212,12 @@ const VehicleList = () => {
                 </div>
                 
                 <div className="text-center">
-                  <div className="text-muted-foreground text-xs mb-1">Mileage</div>
-                  <div className="font-bold text-xs">{vehicle.mileage.toLocaleString()}km</div>
+                  <div className="text-muted-foreground flex items-center justify-center gap-1 text-xs mb-1">
+                    <MapPin className="h-3 w-3" />
+                    Location
+                  </div>
+                  <div className="font-medium text-xs">{vehicle.location}</div>
+                  <div className="text-muted-foreground text-xs mt-1">{vehicle.mileage.toLocaleString()}km</div>
                 </div>
               </div>
 
