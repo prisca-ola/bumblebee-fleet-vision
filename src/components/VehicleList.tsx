@@ -133,15 +133,21 @@ const VehicleList = () => {
 
   return (
     <div className="space-y-4">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search vehicles by ID, plate number, or driver..."
-          className="pl-9"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      {/* Search and Add Vehicle */}
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search vehicles by ID, plate number, or driver..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <Button className="shrink-0">
+          <Truck className="h-4 w-4 mr-2" />
+          Add Vehicle
+        </Button>
       </div>
 
       {/* Vehicle Cards */}
