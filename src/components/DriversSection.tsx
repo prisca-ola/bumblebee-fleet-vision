@@ -1,0 +1,236 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { 
+  User, 
+  Search, 
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  UserPlus
+} from "lucide-react";
+import AddDriverDialog from "./AddDriverDialog";
+
+export interface Driver {
+  id: string;
+  name: string;
+  licenseNumber: string;
+  phone: string;
+  email: string;
+  address: string;
+  licenseExpiry: string;
+  status: "active" | "inactive" | "suspended";
+  assignedVehicle?: string;
+}
+
+const DriversSection = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAddDriver, setShowAddDriver] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([
+    {
+      id: "DRV-001",
+      name: "Adebayo Johnson",
+      licenseNumber: "LIC-AB123456",
+      phone: "+234 801 234 5678",
+      email: "adebayo.johnson@email.com",
+      address: "Lagos Island, Lagos",
+      licenseExpiry: "2025-06-15",
+      status: "active",
+      assignedVehicle: "BUS-001"
+    },
+    {
+      id: "DRV-002",
+      name: "Kemi Okafor",
+      licenseNumber: "LIC-KO789012",
+      phone: "+234 802 345 6789",
+      email: "kemi.okafor@email.com",
+      address: "Victoria Island, Lagos",
+      licenseExpiry: "2024-12-30",
+      status: "active",
+      assignedVehicle: "VAN-003"
+    },
+    {
+      id: "DRV-003",
+      name: "Emeka Nwankwo",
+      licenseNumber: "LIC-EN345678",
+      phone: "+234 803 456 7890",
+      email: "emeka.nwankwo@email.com",
+      address: "Ikoyi, Lagos",
+      licenseExpiry: "2025-03-20",
+      status: "active",
+      assignedVehicle: "TRK-007"
+    },
+    {
+      id: "DRV-004",
+      name: "Fatima Hassan",
+      licenseNumber: "LIC-FH901234",
+      phone: "+234 804 567 8901",
+      email: "fatima.hassan@email.com",
+      address: "Surulere, Lagos",
+      licenseExpiry: "2024-11-10",
+      status: "inactive"
+    },
+    {
+      id: "DRV-005",
+      name: "Tunde Bakare",
+      licenseNumber: "LIC-TB567890",
+      phone: "+234 805 678 9012",
+      email: "tunde.bakare@email.com",
+      address: "Lekki, Lagos",
+      licenseExpiry: "2025-08-05",
+      status: "active",
+      assignedVehicle: "VAN-008"
+    }
+  ]);
+
+  const filteredDrivers = drivers.filter(driver =>
+    driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    driver.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    driver.phone.includes(searchTerm)
+  );
+
+  const getStatusBadge = (status: Driver["status"]) => {
+    switch (status) {
+      case "active": return <Badge className="bg-success/10 text-success border-success/20">Active</Badge>;
+      case "inactive": return <Badge variant="secondary">Inactive</Badge>;
+      case "suspended": return <Badge className="bg-critical/10 text-critical border-critical/20">Suspended</Badge>;
+      default: return <Badge>Unknown</Badge>;
+    }
+  };
+
+  const handleAddDriver = (newDriver: Omit<Driver, "id">) => {
+    const driver: Driver = {
+      ...newDriver,
+      id: `DRV-${String(drivers.length + 1).padStart(3, '0')}`,
+    };
+    setDrivers([...drivers, driver]);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Search and Add Driver */}
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search drivers by name, license, or phone..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <Button className="shrink-0" onClick={() => setShowAddDriver(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Add Driver
+        </Button>
+      </div>
+
+      {/* Driver Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {filteredDrivers.map((driver) => (
+          <Card key={driver.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg ${
+                    driver.status === 'active' ? 'bg-success/10' :
+                    driver.status === 'inactive' ? 'bg-muted' :
+                    'bg-critical/10'
+                  }`}>
+                    <User className={`h-5 w-5 ${
+                      driver.status === 'active' ? 'text-success' :
+                      driver.status === 'inactive' ? 'text-muted-foreground' :
+                      'text-critical'
+                    }`} />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{driver.name}</CardTitle>
+                    <CardDescription>{driver.id}</CardDescription>
+                  </div>
+                </div>
+                {getStatusBadge(driver.status)}
+              </div>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              {/* License Info */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="text-muted-foreground">License Number</div>
+                  <div className="font-medium">{driver.licenseNumber}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    Expires
+                  </div>
+                  <div className="font-medium">{new Date(driver.licenseExpiry).toLocaleDateString()}</div>
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    Phone
+                  </div>
+                  <div className="font-medium">{driver.phone}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <Mail className="h-3 w-3" />
+                    Email
+                  </div>
+                  <div className="font-medium text-xs">{driver.email}</div>
+                </div>
+              </div>
+
+              {/* Address & Vehicle */}
+              <div className="space-y-2 text-sm">
+                <div>
+                  <div className="text-muted-foreground flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    Address
+                  </div>
+                  <div className="font-medium">{driver.address}</div>
+                </div>
+                {driver.assignedVehicle && (
+                  <div>
+                    <div className="text-muted-foreground">Assigned Vehicle</div>
+                    <div className="font-medium">{driver.assignedVehicle}</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end pt-2 border-t border-border">
+                <Button variant="outline" size="sm" className="h-8 px-3">
+                  Edit Details
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {filteredDrivers.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p>No drivers found matching your search.</p>
+        </div>
+      )}
+
+      <AddDriverDialog
+        open={showAddDriver}
+        onOpenChange={setShowAddDriver}
+        onAddDriver={handleAddDriver}
+      />
+    </div>
+  );
+};
+
+export default DriversSection;

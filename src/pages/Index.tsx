@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FleetOverview from "@/components/FleetOverview";
 import VehicleList from "@/components/VehicleList";
+import DriversSection from "@/components/DriversSection";
 import IssueReporting from "@/components/IssueReporting";
 import EmergencyAlerts from "@/components/EmergencyAlerts";
 import MaintenanceReminders from "@/components/MaintenanceReminders";
@@ -10,6 +11,15 @@ import { Truck, AlertTriangle, Wrench, Shield, Activity } from "lucide-react";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Mock drivers data for now - this will be managed in DriversSection
+  const drivers = [
+    { id: "DRV-001", name: "Adebayo Johnson" },
+    { id: "DRV-002", name: "Kemi Okafor" },
+    { id: "DRV-003", name: "Emeka Nwankwo" },
+    { id: "DRV-004", name: "Fatima Hassan" },
+    { id: "DRV-005", name: "Tunde Bakare" },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -41,7 +51,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-muted">
+          <TabsList className="grid w-full grid-cols-6 bg-muted">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               Overview
@@ -49,6 +59,10 @@ const Index = () => {
             <TabsTrigger value="vehicles" className="flex items-center gap-2">
               <Truck className="h-4 w-4" />
               Vehicles
+            </TabsTrigger>
+            <TabsTrigger value="drivers" className="flex items-center gap-2">
+              <Truck className="h-4 w-4" />
+              Drivers
             </TabsTrigger>
             <TabsTrigger value="maintenance" className="flex items-center gap-2">
               <Wrench className="h-4 w-4" />
@@ -77,7 +91,21 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <VehicleList />
+                <VehicleList drivers={drivers} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="drivers" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Fleet Drivers</CardTitle>
+                <CardDescription>
+                  Manage driver information, licenses, and assignments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DriversSection />
               </CardContent>
             </Card>
           </TabsContent>

@@ -14,6 +14,7 @@ import {
   CheckCircle,
   XCircle
 } from "lucide-react";
+import AddVehicleDialog from "./AddVehicleDialog";
 
 interface Vehicle {
   id: string;
@@ -28,11 +29,16 @@ interface Vehicle {
   mileage: number;
 }
 
-const VehicleList = () => {
+interface VehicleListProps {
+  drivers: Array<{ id: string; name: string; }>;
+}
+
+const VehicleList = ({ drivers }: VehicleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAddVehicle, setShowAddVehicle] = useState(false);
   
   // Mock vehicle data
-  const vehicles: Vehicle[] = [
+  const [vehicles, setVehicles] = useState<Vehicle[]>([
     {
       id: "BUS-001",
       plateNumber: "ABC-123-XY",
@@ -93,7 +99,7 @@ const VehicleList = () => {
       issues: 0,
       mileage: 21450
     }
-  ];
+  ]);
 
   const filteredVehicles = vehicles.filter(vehicle =>
     vehicle.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -131,6 +137,10 @@ const VehicleList = () => {
     }
   };
 
+  const handleAddVehicle = (newVehicle: Vehicle) => {
+    setVehicles([...vehicles, newVehicle]);
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Add Vehicle */}
@@ -144,7 +154,7 @@ const VehicleList = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button className="shrink-0">
+        <Button className="shrink-0" onClick={() => setShowAddVehicle(true)}>
           <Truck className="h-4 w-4 mr-2" />
           Add Vehicle
         </Button>
@@ -243,6 +253,13 @@ const VehicleList = () => {
           <p>No vehicles found matching your search.</p>
         </div>
       )}
+
+      <AddVehicleDialog
+        open={showAddVehicle}
+        onOpenChange={setShowAddVehicle}
+        onAddVehicle={handleAddVehicle}
+        drivers={drivers}
+      />
     </div>
   );
 };
