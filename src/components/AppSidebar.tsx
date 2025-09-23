@@ -1,0 +1,75 @@
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { Truck, AlertTriangle, Wrench, Shield, Activity, Menu } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+interface NavigationItem {
+  title: string;
+  value: string;
+  icon: React.ComponentType<any>;
+}
+
+const navigationItems: NavigationItem[] = [
+  { title: "Overview", value: "overview", icon: Activity },
+  { title: "Vehicles", value: "vehicles", icon: Truck },
+  { title: "Drivers", value: "drivers", icon: Truck },
+  { title: "Maintenance", value: "maintenance", icon: Wrench },
+  { title: "Issues", value: "issues", icon: AlertTriangle },
+  { title: "Compliance", value: "compliance", icon: Shield },
+];
+
+interface AppSidebarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  const handleItemClick = (value: string) => {
+    onTabChange(value);
+  };
+
+  return (
+    <Sidebar
+      className={isCollapsed ? "w-14" : "w-60"}
+      collapsible="icon"
+    >
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.value}>
+                  <SidebarMenuButton
+                    onClick={() => handleItemClick(item.value)}
+                    className={`w-full justify-start ${
+                      activeTab === item.value
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "hover:bg-sidebar-accent/50"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {!isCollapsed && <span>{item.title}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
