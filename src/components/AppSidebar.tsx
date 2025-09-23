@@ -43,22 +43,22 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
 
   return (
     <Sidebar
-      className={isCollapsed ? "w-14" : "w-60"}
+      className={`${isCollapsed ? "w-14" : "w-60"} bg-sidebar border-sidebar-border`}
       collapsible="icon"
     >
-      <SidebarContent>
+      <SidebarContent className="bg-sidebar">
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-foreground">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.value}>
                   <SidebarMenuButton
                     onClick={() => handleItemClick(item.value)}
-                    className={`w-full justify-start ${
+                    className={`w-full justify-start text-sidebar-foreground ${
                       activeTab === item.value
                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "hover:bg-sidebar-accent/50"
+                        : "hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                     }`}
                   >
                     <item.icon className="h-4 w-4" />
