@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
   Truck, 
@@ -113,9 +114,19 @@ const FleetOverview = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Open Issues by Severity */}
         <Card>
-          <CardHeader>
-            <CardTitle>Open Issues by Type</CardTitle>
-            <CardDescription>Current issues requiring attention</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div>
+              <CardTitle>Open Issues by Type</CardTitle>
+              <CardDescription>Current issues requiring attention</CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/alerts'}
+              className="shrink-0"
+            >
+              View All
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {issuesByType.map((issue, index) => (

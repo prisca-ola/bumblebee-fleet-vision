@@ -11,6 +11,13 @@ import {
   Zap
 } from "lucide-react";
 
+interface DtcCode {
+  code: string;
+  description: string;
+  severity: "critical" | "warning" | "maintenance";
+  category: string;
+}
+
 interface EmergencyAlert {
   id: string;
   vehicleId: string;
@@ -19,12 +26,41 @@ interface EmergencyAlert {
   location: string;
   timestamp: string;
   severity: "critical" | "emergency";
+  dtcCode?: DtcCode;
   nearestWorkshop?: {
     name: string;
     distance: string;
     phone: string;
   };
 }
+
+// DTC Code interpretation mapping
+const dtcDatabase: Record<string, DtcCode> = {
+  "P0300": {
+    code: "P0300",
+    description: "Engine Misfire Detected – Vehicle may run rough. Likely spark plug or fuel issue.",
+    severity: "critical",
+    category: "Engine"
+  },
+  "P0171": {
+    code: "P0171",
+    description: "Engine Running Lean – Fuel mixture too lean. Check for vacuum leaks or dirty air filter.",
+    severity: "warning",
+    category: "Fuel System"
+  },
+  "P0420": {
+    code: "P0420",
+    description: "Catalytic Converter Efficiency Below Threshold – Emissions system issue. Service required.",
+    severity: "maintenance",
+    category: "Emissions"
+  },
+  "B1000": {
+    code: "B1000",
+    description: "ECU Malfunction – Electronic control unit needs diagnostic check.",
+    severity: "critical",
+    category: "Electrical"
+  }
+};
 
 const EmergencyAlerts = () => {
   // Mock emergency alerts - in real app this would come from real-time API
@@ -37,10 +73,26 @@ const EmergencyAlerts = () => {
       location: "Third Mainland Bridge, Lagos",
       timestamp: "2024-01-12 10:45",
       severity: "emergency",
+      dtcCode: dtcDatabase["P0300"],
       nearestWorkshop: {
         name: "Lagos Emergency Auto Repair",
         distance: "2.3km",
         phone: "+234-801-234-5678"
+      }
+    },
+    {
+      id: "EMRG-002",
+      vehicleId: "BUS-005",
+      driver: "Fatima Ibrahim",
+      issue: "ECU malfunction detected",
+      location: "Apapa, Lagos",
+      timestamp: "2024-01-12 11:20",
+      severity: "critical",
+      dtcCode: dtcDatabase["B1000"],
+      nearestWorkshop: {
+        name: "Apapa Auto Diagnostics",
+        distance: "1.5km",
+        phone: "+234-802-987-6543"
       }
     }
   ]);
@@ -76,15 +128,35 @@ const EmergencyAlerts = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge className="bg-critical text-critical-foreground">
-                        EMERGENCY
+                        {alert.severity.toUpperCase()}
                       </Badge>
                       <span className="font-bold text-critical text-lg">
                         {alert.vehicleId}
                       </span>
+                      {alert.dtcCode && (
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {alert.dtcCode.code}
+                        </Badge>
+                      )}
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-1">
                       {alert.issue}
                     </h3>
+                    {alert.dtcCode && (
+                      <div className="bg-background/80 p-3 rounded-lg mb-2">
+                        <div className="text-sm font-medium text-foreground mb-1">
+                          DTC Code Interpretation:
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {alert.dtcCode.description}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {alert.dtcCode.category}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>Driver: {alert.driver}</span>
                       <div className="flex items-center gap-1">
