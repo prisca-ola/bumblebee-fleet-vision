@@ -8,6 +8,7 @@ import MaintenanceReminders from "@/components/MaintenanceReminders";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Truck, AlertTriangle, Wrench, Shield, Activity, Menu } from "lucide-react";
 
 const Index = () => {
@@ -100,10 +101,11 @@ const Index = () => {
                     <p className="text-muted-foreground text-sm">Fleet Management Dashboard</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-4 text-sm">
                   <div className="px-3 py-1 rounded-full bg-success/10 text-success border border-success/20">
                     ● Online
                   </div>
+                  <ThemeToggle />
                 </div>
               </div>
             </div>
