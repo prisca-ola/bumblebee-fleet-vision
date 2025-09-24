@@ -110,6 +110,33 @@ const FleetOverview = () => {
         </Card>
       </div>
 
+      {/* Fleet Performance Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Fleet Performance Summary</CardTitle>
+          <CardDescription>Key performance indicators for this month</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <Clock className="h-8 w-8 text-warning mx-auto mb-2" />
+              <div className="text-2xl font-bold">{fleetStats.totalDowntime}h</div>
+              <p className="text-sm text-muted-foreground">Total Downtime</p>
+            </div>
+            <div className="text-center">
+              <Truck className="h-8 w-8 text-primary mx-auto mb-2" />
+              <div className="text-2xl font-bold">{fleetStats.activeDrivers}</div>
+              <p className="text-sm text-muted-foreground">Active Drivers</p>
+            </div>
+            <div className="text-center">
+              <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
+              <div className="text-2xl font-bold">98.2%</div>
+              <p className="text-sm text-muted-foreground">Uptime Rate</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Issues Breakdown and Upcoming Services */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Open Issues by Severity */}
@@ -176,33 +203,6 @@ const FleetOverview = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Downtime Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Fleet Performance Summary</CardTitle>
-          <CardDescription>Key performance indicators for this month</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <Clock className="h-8 w-8 text-warning mx-auto mb-2" />
-              <div className="text-2xl font-bold">{fleetStats.totalDowntime}h</div>
-              <p className="text-sm text-muted-foreground">Total Downtime</p>
-            </div>
-            <div className="text-center">
-              <Truck className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">{fleetStats.activeDrivers}</div>
-              <p className="text-sm text-muted-foreground">Active Drivers</p>
-            </div>
-            <div className="text-center">
-              <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
-              <div className="text-2xl font-bold">98.2%</div>
-              <p className="text-sm text-muted-foreground">Uptime Rate</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

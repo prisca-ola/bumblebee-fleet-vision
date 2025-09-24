@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Truck, AlertTriangle, Wrench, Shield, Activity, Menu } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  Truck, 
+  UserCheck, 
+  Wrench, 
+  AlertTriangle, 
+  Shield 
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,9 +27,9 @@ interface NavigationItem {
 }
 
 const navigationItems: NavigationItem[] = [
-  { title: "Overview", value: "overview", icon: Activity },
+  { title: "Overview", value: "overview", icon: LayoutDashboard },
   { title: "Vehicles", value: "vehicles", icon: Truck },
-  { title: "Drivers", value: "drivers", icon: Truck },
+  { title: "Drivers", value: "drivers", icon: UserCheck },
   { title: "Maintenance", value: "maintenance", icon: Wrench },
   { title: "Issues", value: "issues", icon: AlertTriangle },
   { title: "Compliance", value: "compliance", icon: Shield },

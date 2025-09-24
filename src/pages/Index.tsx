@@ -109,8 +109,8 @@ const Index = () => {
             </div>
           </header>
 
-          {/* Emergency Alerts - Always visible when present */}
-          <EmergencyAlerts />
+          {/* Emergency Alerts - Only show on non-overview pages */}
+          {activeTab !== "overview" && <EmergencyAlerts />}
 
           {/* Main Content */}
           <main className="flex-1 container mx-auto px-4 py-6">
