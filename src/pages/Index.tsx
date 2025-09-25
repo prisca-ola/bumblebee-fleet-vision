@@ -5,6 +5,7 @@ import DriversSection from "@/components/DriversSection";
 import IssueReporting from "@/components/IssueReporting";
 import EmergencyAlerts from "@/components/EmergencyAlerts";
 import MaintenanceReminders from "@/components/MaintenanceReminders";
+import AssignSection from "@/components/AssignSection";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -52,6 +53,20 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <DriversSection />
+            </CardContent>
+          </Card>
+        );
+      case "assign":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Personnel Assignments</CardTitle>
+              <CardDescription>
+                Assign drivers and technicians to vehicles and manage their assignments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AssignSection />
             </CardContent>
           </Card>
         );

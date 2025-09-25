@@ -6,7 +6,8 @@ import {
   UserCheck, 
   Wrench, 
   AlertTriangle, 
-  Shield 
+  Shield,
+  Users
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +31,7 @@ const navigationItems: NavigationItem[] = [
   { title: "Overview", value: "overview", icon: LayoutDashboard },
   { title: "Vehicles", value: "vehicles", icon: Truck },
   { title: "Drivers", value: "drivers", icon: UserCheck },
+  { title: "Assign", value: "assign", icon: Users },
   { title: "Maintenance", value: "maintenance", icon: Wrench },
   { title: "Issues", value: "issues", icon: AlertTriangle },
   { title: "Compliance", value: "compliance", icon: Shield },
