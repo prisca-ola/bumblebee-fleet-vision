@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { 
   User, 
   Search, 
@@ -10,7 +17,8 @@ import {
   Mail,
   MapPin,
   Calendar,
-  UserPlus
+  UserPlus,
+  Edit
 } from "lucide-react";
 import AddDriverDialog from "./AddDriverDialog";
 
@@ -128,93 +136,89 @@ const DriversSection = () => {
         </Button>
       </div>
 
-      {/* Driver Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filteredDrivers.map((driver) => (
-          <Card key={driver.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    driver.status === 'active' ? 'bg-success/10' :
-                    driver.status === 'inactive' ? 'bg-muted' :
-                    'bg-critical/10'
-                  }`}>
-                    <User className={`h-5 w-5 ${
-                      driver.status === 'active' ? 'text-success' :
-                      driver.status === 'inactive' ? 'text-muted-foreground' :
-                      'text-critical'
-                    }`} />
+      {/* Drivers Table */}
+      <div className="border rounded-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Driver</TableHead>
+              <TableHead>License Info</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead>Assigned Vehicle</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredDrivers.map((driver) => (
+              <TableRow key={driver.id} className="hover:bg-muted/50">
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${
+                      driver.status === 'active' ? 'bg-success/10' :
+                      driver.status === 'inactive' ? 'bg-muted' :
+                      'bg-critical/10'
+                    }`}>
+                      <User className={`h-4 w-4 ${
+                        driver.status === 'active' ? 'text-success' :
+                        driver.status === 'inactive' ? 'text-muted-foreground' :
+                        'text-critical'
+                      }`} />
+                    </div>
+                    <div>
+                      <div className="font-medium">{driver.name}</div>
+                      <div className="text-sm text-muted-foreground">{driver.id}</div>
+                    </div>
                   </div>
+                </TableCell>
+                <TableCell>
                   <div>
-                    <CardTitle className="text-lg">{driver.name}</CardTitle>
-                    <CardDescription>{driver.id}</CardDescription>
+                    <div className="font-medium">{driver.licenseNumber}</div>
+                    <div className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Expires: {new Date(driver.licenseExpiry).toLocaleDateString()}
+                    </div>
                   </div>
-                </div>
-                {getStatusBadge(driver.status)}
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* License Info */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-muted-foreground">License Number</div>
-                  <div className="font-medium">{driver.licenseNumber}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Expires
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <div className="text-sm flex items-center gap-1">
+                      <Phone className="h-3 w-3 text-muted-foreground" />
+                      {driver.phone}
+                    </div>
+                    <div className="text-sm flex items-center gap-1">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      {driver.email}
+                    </div>
                   </div>
-                  <div className="font-medium">{new Date(driver.licenseExpiry).toLocaleDateString()}</div>
-                </div>
-              </div>
-
-              {/* Contact Info */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-muted-foreground flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    Phone
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-muted-foreground" />
+                    {driver.address}
                   </div>
-                  <div className="font-medium">{driver.phone}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground flex items-center gap-1">
-                    <Mail className="h-3 w-3" />
-                    Email
-                  </div>
-                  <div className="font-medium text-xs">{driver.email}</div>
-                </div>
-              </div>
-
-              {/* Address & Vehicle */}
-              <div className="space-y-2 text-sm">
-                <div>
-                  <div className="text-muted-foreground flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    Address
-                  </div>
-                  <div className="font-medium">{driver.address}</div>
-                </div>
-                {driver.assignedVehicle && (
-                  <div>
-                    <div className="text-muted-foreground">Assigned Vehicle</div>
+                </TableCell>
+                <TableCell>
+                  {driver.assignedVehicle ? (
                     <div className="font-medium">{driver.assignedVehicle}</div>
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex justify-end pt-2 border-t border-border">
-                <Button variant="outline" size="sm" className="h-8 px-3">
-                  Edit Details
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  ) : (
+                    <span className="text-muted-foreground text-sm">Not assigned</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {getStatusBadge(driver.status)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       {filteredDrivers.length === 0 && (
