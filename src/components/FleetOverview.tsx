@@ -111,11 +111,11 @@ const FleetOverview = () => {
       </div>
 
       {/* Fleet Performance Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Fleet Performance Summary</CardTitle>
-          <CardDescription>Key performance indicators for this month</CardDescription>
-        </CardHeader>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">Fleet Performance Summary</CardTitle>
+            <CardDescription className="mt-1">Key performance indicators for this month</CardDescription>
+          </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
@@ -143,8 +143,8 @@ const FleetOverview = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
-              <CardTitle>Open Issues by Type</CardTitle>
-              <CardDescription>Current issues requiring attention</CardDescription>
+              <CardTitle className="text-lg font-semibold">Open Issues by Type</CardTitle>
+              <CardDescription className="mt-2">Current issues requiring attention</CardDescription>
             </div>
             <Button 
               variant="outline" 
@@ -181,8 +181,8 @@ const FleetOverview = () => {
         {/* Upcoming Services */}
         <Card>
           <CardHeader>
-            <CardTitle>Upcoming Services</CardTitle>
-            <CardDescription>Scheduled maintenance reminders</CardDescription>
+            <CardTitle className="text-lg font-semibold">Upcoming Services</CardTitle>
+            <CardDescription className="mt-1">Scheduled maintenance reminders</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {upcomingServices.map((service, index) => (

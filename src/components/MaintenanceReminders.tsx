@@ -159,7 +159,7 @@ const MaintenanceReminders = () => {
               <h3 className="text-lg font-semibold">Maintenance Schedule</h3>
               <p className="text-muted-foreground text-sm">Track upcoming services and maintenance tasks</p>
             </div>
-            <Button variant="outline">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Service
             </Button>

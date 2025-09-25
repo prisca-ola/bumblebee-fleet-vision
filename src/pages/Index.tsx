@@ -105,6 +105,13 @@ const Index = () => {
                   <div className="px-3 py-1 rounded-full bg-success/10 text-success border border-success/20">
                     ● Online
                   </div>
+                  <button
+                    onClick={() => window.location.href = '/alerts'}
+                    className="p-2 rounded-full hover:bg-critical/10 transition-colors"
+                    title="Emergency Alerts"
+                  >
+                    <AlertTriangle className="h-5 w-5 text-critical animate-pulse" />
+                  </button>
                   <ThemeToggle />
                 </div>
               </div>
