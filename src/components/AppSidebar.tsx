@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 
 interface NavigationItem {
   title: string;
@@ -29,12 +30,15 @@ interface NavigationItem {
   icon: React.ComponentType<any>;
 }
 
-const navigationItems: NavigationItem[] = [
+const mainNavigationItems: NavigationItem[] = [
   { title: "Overview", value: "overview", icon: LayoutDashboard },
   { title: "Vehicles", value: "vehicles", icon: Truck },
   { title: "Drivers", value: "drivers", icon: UserCheck },
   { title: "Technicians", value: "technicians", icon: Wrench },
   { title: "Assign", value: "assign", icon: Users },
+];
+
+const systemNavigationItems: NavigationItem[] = [
   { title: "Maintenance", value: "maintenance", icon: Shield },
   { title: "Issues", value: "issues", icon: AlertTriangle },
   { title: "Reports", value: "reports", icon: BarChart3 },
@@ -64,7 +68,34 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
           <SidebarGroupLabel className="text-sidebar-foreground">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
+              {mainNavigationItems.map((item) => (
+                <SidebarMenuItem key={item.value}>
+                  <SidebarMenuButton
+                    onClick={() => handleItemClick(item.value)}
+                    className={`w-full justify-start text-sidebar-foreground ${
+                      activeTab === item.value
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {!isCollapsed && <span>{item.title}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <div className="px-3 py-2">
+          <Separator />
+        </div>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-sidebar-foreground">System</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {systemNavigationItems.map((item) => (
                 <SidebarMenuItem key={item.value}>
                   <SidebarMenuButton
                     onClick={() => handleItemClick(item.value)}
