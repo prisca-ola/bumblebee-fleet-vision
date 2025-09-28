@@ -7,7 +7,9 @@ import {
   Wrench, 
   AlertTriangle, 
   Shield,
-  Users
+  Users,
+  BarChart3,
+  Settings
 } from "lucide-react";
 import {
   Sidebar,
@@ -31,10 +33,12 @@ const navigationItems: NavigationItem[] = [
   { title: "Overview", value: "overview", icon: LayoutDashboard },
   { title: "Vehicles", value: "vehicles", icon: Truck },
   { title: "Drivers", value: "drivers", icon: UserCheck },
+  { title: "Technicians", value: "technicians", icon: Wrench },
   { title: "Assign", value: "assign", icon: Users },
-  { title: "Maintenance", value: "maintenance", icon: Wrench },
+  { title: "Maintenance", value: "maintenance", icon: Shield },
   { title: "Issues", value: "issues", icon: AlertTriangle },
-  { title: "Compliance", value: "compliance", icon: Shield },
+  { title: "Reports", value: "reports", icon: BarChart3 },
+  { title: "Settings", value: "settings", icon: Settings },
 ];
 
 interface AppSidebarProps {

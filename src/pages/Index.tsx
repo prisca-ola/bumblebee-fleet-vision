@@ -2,10 +2,13 @@ import { useState } from "react";
 import FleetOverview from "@/components/FleetOverview";
 import VehicleList from "@/components/VehicleList";
 import DriversSection from "@/components/DriversSection";
+import TechniciansSection from "@/components/TechniciansSection";
 import IssueReporting from "@/components/IssueReporting";
 import EmergencyAlerts from "@/components/EmergencyAlerts";
 import MaintenanceReminders from "@/components/MaintenanceReminders";
 import AssignSection from "@/components/AssignSection";
+import ReportsSection from "@/components/ReportsSection";
+import SettingsSection from "@/components/SettingsSection";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -56,6 +59,20 @@ const Index = () => {
             </CardContent>
           </Card>
         );
+      case "technicians":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Fleet Technicians</CardTitle>
+              <CardDescription>
+                Manage technician profiles, specializations, and repair assignments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TechniciansSection />
+            </CardContent>
+          </Card>
+        );
       case "assign":
         return (
           <Card>
@@ -74,20 +91,31 @@ const Index = () => {
         return <MaintenanceReminders />;
       case "issues":
         return <IssueReporting />;
-      case "compliance":
+      case "reports":
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Compliance Status</CardTitle>
+              <CardTitle>Fleet Reports</CardTitle>
               <CardDescription>
-                Track vehicle licenses, insurance, and regulatory compliance
+                Comprehensive reporting hub for drivers, vehicles, and technicians
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Compliance tracking coming soon</p>
-              </div>
+              <ReportsSection />
+            </CardContent>
+          </Card>
+        );
+      case "settings":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Fleet Settings</CardTitle>
+              <CardDescription>
+                Configure notifications, report frequency, and role permissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SettingsSection />
             </CardContent>
           </Card>
         );
