@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -8,7 +8,10 @@ import {
   MapPin, 
   X,
   Clock,
-  Zap
+  Zap,
+  Wrench,
+  Calendar,
+  DollarSign
 } from "lucide-react";
 
 interface DtcCode {
@@ -23,9 +26,12 @@ interface EmergencyAlert {
   vehicleId: string;
   driver: string;
   issue: string;
+  issueExplanation: string;
+  systemAffected: string;
   location: string;
   timestamp: string;
-  severity: "critical" | "emergency";
+  severity: "Safety Critical" | "High Priority" | "Medium Priority" | "Low Priority";
+  estimatedCostRange: string;
   dtcCode?: DtcCode;
   nearestWorkshop?: {
     name: string;
@@ -67,12 +73,15 @@ const EmergencyAlerts = () => {
   const [alerts, setAlerts] = useState<EmergencyAlert[]>([
     {
       id: "EMRG-001",
-      vehicleId: "TRK-007",
+      vehicleId: "TRK-045",
       driver: "Emeka Nwankwo",
-      issue: "Engine overheating - temperature critical",
+      issue: "Engine Misfire Detected",
+      issueExplanation: "Multiple cylinders are misfiring, causing rough idling and potential engine damage if not addressed immediately.",
+      systemAffected: "Engine Control System",
       location: "Third Mainland Bridge, Lagos",
-      timestamp: "2024-01-12 10:45",
-      severity: "emergency",
+      timestamp: "2024-01-12 10:45 AM",
+      severity: "Safety Critical",
+      estimatedCostRange: "₦50,000 - ₦120,000",
       dtcCode: dtcDatabase["P0300"],
       nearestWorkshop: {
         name: "Lagos Emergency Auto Repair",
@@ -82,12 +91,15 @@ const EmergencyAlerts = () => {
     },
     {
       id: "EMRG-002",
-      vehicleId: "BUS-005",
+      vehicleId: "BUS-023",
       driver: "Fatima Ibrahim",
-      issue: "ECU malfunction detected",
+      issue: "ECU Malfunction Detected",
+      issueExplanation: "Electronic Control Unit is experiencing communication errors, affecting vehicle performance and diagnostics.",
+      systemAffected: "Electrical Control System",
       location: "Apapa, Lagos",
-      timestamp: "2024-01-12 11:20",
-      severity: "critical",
+      timestamp: "2024-01-12 11:20 AM",
+      severity: "High Priority",
+      estimatedCostRange: "₦80,000 - ₦200,000",
       dtcCode: dtcDatabase["B1000"],
       nearestWorkshop: {
         name: "Apapa Auto Diagnostics",
@@ -101,136 +113,121 @@ const EmergencyAlerts = () => {
     setAlerts(alerts.filter(alert => alert.id !== alertId));
   };
 
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case "Safety Critical":
+        return "bg-destructive text-destructive-foreground";
+      case "High Priority":
+        return "bg-orange-500 text-white";
+      case "Medium Priority":
+        return "bg-yellow-500 text-black";
+      case "Low Priority":
+        return "bg-blue-500 text-white";
+      default:
+        return "bg-destructive text-destructive-foreground";
+    }
+  };
+
   if (alerts.length === 0) {
     return null;
   }
 
   return (
-    <div className="container mx-auto px-4 py-4">
+    <div className="container mx-auto px-4 py-4 space-y-4">
       {alerts.map((alert) => (
-        <Card key={alert.id} className="border-critical bg-critical/5 shadow-critical animate-pulse">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-4">
-              {/* Emergency Icon */}
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-critical rounded-full flex items-center justify-center animate-bounce">
-                  {alert.severity === "emergency" ? (
-                    <Zap className="h-6 w-6 text-critical-foreground" />
-                  ) : (
-                    <AlertTriangle className="h-6 w-6 text-critical-foreground" />
-                  )}
+        <Card key={alert.id} className="border-destructive/20 bg-destructive/5 shadow-lg">
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-destructive rounded-full flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-destructive-foreground" />
                 </div>
-              </div>
-
-              {/* Alert Content */}
-              <div className="flex-1 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-critical text-critical-foreground">
-                        {alert.severity.toUpperCase()}
-                      </Badge>
-                      <span className="font-bold text-critical text-lg">
-                        {alert.vehicleId}
-                      </span>
-                      {alert.dtcCode && (
-                        <Badge variant="outline" className="font-mono text-xs">
-                          {alert.dtcCode.code}
-                        </Badge>
-                      )}
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-1">
-                      {alert.issue}
-                    </h3>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Badge className={getSeverityColor(alert.severity)}>
+                      {alert.severity}
+                    </Badge>
                     {alert.dtcCode && (
-                      <div className="bg-background/80 p-3 rounded-lg mb-2">
-                        <div className="text-sm font-medium text-foreground mb-1">
-                          DTC Code Interpretation:
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {alert.dtcCode.description}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {alert.dtcCode.category}
-                          </Badge>
-                        </div>
-                      </div>
+                      <Badge variant="outline" className="font-mono">
+                        {alert.dtcCode.code}
+                      </Badge>
                     )}
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Driver: {alert.driver}</span>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {alert.timestamp}
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => dismissAlert(alert.id)}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4 text-critical" />
-                  <span className="font-medium">{alert.location}</span>
-                </div>
-
-                {/* Emergency Actions */}
-                <div className="bg-background/80 rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-sm">Emergency Response</h4>
-                    <Badge variant="outline" className="text-xs">
-                      Auto-assigned
+                    <Badge variant="secondary" className="font-mono">
+                      {alert.vehicleId}
                     </Badge>
                   </div>
-                  
-                  {alert.nearestWorkshop && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <div className="text-xs text-muted-foreground">Nearest Workshop</div>
-                        <div>
-                          <div className="font-medium text-sm">{alert.nearestWorkshop.name}</div>
-                          <div className="text-xs text-muted-foreground">{alert.nearestWorkshop.distance} away</div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          className="flex-1 bg-gradient-critical hover:opacity-90 text-critical-foreground"
-                        >
-                          <Phone className="h-3 w-3 mr-1" />
-                          Call Workshop
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          Directions
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      className="bg-critical hover:bg-critical/90 text-critical-foreground"
-                    >
-                      <Phone className="h-3 w-3 mr-1" />
-                      Call Driver
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      Dispatch Tow Truck
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      Alert Fleet Manager
-                    </Button>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>{alert.timestamp}</span>
                   </div>
                 </div>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => dismissAlert(alert.id)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Issue Details */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                {alert.issue}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {alert.issueExplanation}
+              </p>
+            </div>
+
+            {/* Key Information Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-background/50 rounded-lg">
+              <div className="space-y-3">
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Driver</div>
+                  <div className="text-sm font-medium">{alert.driver}</div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">System Affected</div>
+                  <div className="text-sm font-medium">{alert.systemAffected}</div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Location</div>
+                  <div className="flex items-start gap-1">
+                    <MapPin className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <span className="text-sm font-medium">{alert.location}</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Estimated Cost</div>
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-sm font-medium">{alert.estimatedCostRange}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button size="sm" className="bg-primary hover:bg-primary/90">
+                <Calendar className="h-3 w-3 mr-2" />
+                Schedule Maintenance
+              </Button>
+              <Button size="sm" variant="outline">
+                <Wrench className="h-3 w-3 mr-2" />
+                Dispatch Mechanic
+              </Button>
+              <Button size="sm" variant="outline">
+                <Phone className="h-3 w-3 mr-2" />
+                Call Driver
+              </Button>
             </div>
           </CardContent>
         </Card>
