@@ -9,6 +9,7 @@ import MaintenanceReminders from "@/components/MaintenanceReminders";
 import AssignSection from "@/components/AssignSection";
 import ReportsSection from "@/components/ReportsSection";
 import SettingsSection from "@/components/SettingsSection";
+import LiveMap from "@/components/LiveMap";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -46,19 +47,7 @@ const Index = () => {
           </Card>
         );
       case "drivers":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Fleet Drivers</CardTitle>
-              <CardDescription>
-                Manage driver information, licenses, and assignments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DriversSection />
-            </CardContent>
-          </Card>
-        );
+        return <DriversSection />;
       case "technicians":
         return (
           <Card>
@@ -119,6 +108,8 @@ const Index = () => {
             </CardContent>
           </Card>
         );
+      case "live-map":
+        return <LiveMap />;
       default:
         return <FleetOverview />;
     }

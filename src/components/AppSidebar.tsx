@@ -9,7 +9,8 @@ import {
   Shield,
   Users,
   BarChart3,
-  Settings
+  Settings,
+  MapPin
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +37,7 @@ const mainNavigationItems: NavigationItem[] = [
   { title: "Drivers", value: "drivers", icon: UserCheck },
   { title: "Technicians", value: "technicians", icon: Wrench },
   { title: "Assign", value: "assign", icon: Users },
+  { title: "Live Map", value: "live-map", icon: MapPin },
 ];
 
 const systemNavigationItems: NavigationItem[] = [

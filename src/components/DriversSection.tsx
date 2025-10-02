@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -117,8 +118,69 @@ const DriversSection = () => {
     setDrivers([...drivers, driver]);
   };
 
+  const totalDrivers = drivers.length;
+  const activeDrivers = drivers.filter(d => d.status === 'active').length;
+  const avgRating = 4.6; // This would come from actual data
+  const safetyScore = 94; // This would come from actual data
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">Fleet Drivers</h2>
+        <p className="text-muted-foreground">Manage your fleet drivers and their assignments</p>
+      </div>
+
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Total Drivers</p>
+              <p className="text-2xl font-bold">{totalDrivers}</p>
+            </div>
+            <div className="p-3 bg-primary/10 rounded-lg">
+              <User className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Active Drivers</p>
+              <p className="text-2xl font-bold">{activeDrivers}</p>
+            </div>
+            <div className="p-3 bg-success/10 rounded-lg">
+              <User className="h-6 w-6 text-success" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Avg Rating</p>
+              <p className="text-2xl font-bold">{avgRating}<span className="text-base text-muted-foreground">/5.0</span></p>
+            </div>
+            <div className="p-3 bg-warning/10 rounded-lg">
+              <span className="text-2xl">⭐</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Safety Score</p>
+              <p className="text-2xl font-bold">{safetyScore}<span className="text-base text-muted-foreground">%</span></p>
+            </div>
+            <div className="p-3 bg-success/10 rounded-lg">
+              <span className="text-2xl">🛡️</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {/* Search and Add Driver */}
       <div className="flex gap-3">
         <div className="relative flex-1">
