@@ -131,7 +131,7 @@ const Index = () => {
                     <Truck className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-foreground">Bumble Bee</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Fleet Camp</h1>
                     <p className="text-muted-foreground text-sm">Fleet Management Dashboard</p>
                   </div>
                 </div>
