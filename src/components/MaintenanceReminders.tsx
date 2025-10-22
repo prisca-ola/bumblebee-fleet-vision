@@ -25,6 +25,10 @@ interface MaintenanceReminder {
   priority: "low" | "medium" | "high" | "overdue";
   lastCompleted?: string;
   cost?: string;
+  category: "minor" | "semi-major" | "major";
+  estimatedDowntime: number; // in hours
+  revenueImpact: number; // per hour
+  timeline: string; // expected completion time
 }
 
 interface ComplianceItem {
@@ -51,7 +55,11 @@ const MaintenanceReminders = () => {
       dueKm: 50000,
       priority: "medium",
       lastCompleted: "2023-12-15",
-      cost: "₦15,000"
+      cost: "₦15,000",
+      category: "minor",
+      estimatedDowntime: 2,
+      revenueImpact: 3500,
+      timeline: "2-3 hours"
     },
     {
       id: "MAINT-002", 
@@ -62,7 +70,11 @@ const MaintenanceReminders = () => {
       dueKm: 32500,
       priority: "high",
       lastCompleted: "2023-07-18",
-      cost: "₦45,000"
+      cost: "₦45,000",
+      category: "semi-major",
+      estimatedDowntime: 8,
+      revenueImpact: 4200,
+      timeline: "6-8 hours"
     },
     {
       id: "MAINT-003",
@@ -73,7 +85,11 @@ const MaintenanceReminders = () => {
       dueKm: 80000,
       priority: "overdue",
       lastCompleted: "2023-01-10",
-      cost: "₦85,000"
+      cost: "₦85,000",
+      category: "major",
+      estimatedDowntime: 24,
+      revenueImpact: 5000,
+      timeline: "1-2 days"
     }
   ];
 
@@ -127,6 +143,19 @@ const MaintenanceReminders = () => {
   const calculateKmProgress = (current: number, due: number) => {
     const lastServiceKm = due - 10000; // Assuming 10k km intervals
     return Math.min(((current - lastServiceKm) / (due - lastServiceKm)) * 100, 100);
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "major": return "bg-critical/10 text-critical border-critical/20";
+      case "semi-major": return "bg-warning/10 text-warning border-warning/20";
+      case "minor": return "bg-success/10 text-success border-success/20";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const calculateRevenueLoss = (downtime: number, revenuePerHour: number) => {
+    return (downtime * revenuePerHour).toLocaleString();
   };
 
   return (
@@ -198,7 +227,18 @@ const MaintenanceReminders = () => {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Category Badge */}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs">Category:</span>
+                  <Badge className={getCategoryColor(reminder.category)}>
+                    {reminder.category.toUpperCase()}
+                  </Badge>
+                  <span className="text-muted-foreground text-xs ml-auto">
+                    Timeline: {reminder.timeline}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <div className="text-muted-foreground text-xs mb-1">Due Date</div>
                     <div className="font-medium flex items-center gap-1">
@@ -219,8 +259,28 @@ const MaintenanceReminders = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground text-xs mb-1">Estimated Cost</div>
+                    <div className="text-muted-foreground text-xs mb-1">Repair Cost</div>
                     <div className="font-bold text-lg">{reminder.cost}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground text-xs mb-1">Downtime</div>
+                    <div className="font-bold text-lg flex items-center gap-1">
+                      <Clock className="h-4 w-4 text-warning" />
+                      {reminder.estimatedDowntime}h
+                    </div>
+                  </div>
+                </div>
+
+                {/* Revenue Impact Warning */}
+                <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-warning mt-0.5" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-warning">Potential Revenue Loss</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Estimated loss during downtime: <span className="font-bold text-warning">₦{calculateRevenueLoss(reminder.estimatedDowntime, reminder.revenueImpact)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
