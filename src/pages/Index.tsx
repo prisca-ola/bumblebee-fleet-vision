@@ -10,6 +10,8 @@ import AssignSection from "@/components/AssignSection";
 import ReportsSection from "@/components/ReportsSection";
 import SettingsSection from "@/components/SettingsSection";
 import LiveMap from "@/components/LiveMap";
+import TechnicianMap from "@/components/TechnicianMap";
+import PartsInventory from "@/components/PartsInventory";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -80,6 +82,34 @@ const Index = () => {
         return <MaintenanceReminders />;
       case "issues":
         return <IssueReporting />;
+      case "tech-map":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Technician Location & Dispatch</CardTitle>
+              <CardDescription>
+                Real-time technician mapping for faster dispatch and response
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TechnicianMap />
+            </CardContent>
+          </Card>
+        );
+      case "parts":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Parts & Inventory Management</CardTitle>
+              <CardDescription>
+                Track inventory levels and predict parts needs based on maintenance history
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PartsInventory />
+            </CardContent>
+          </Card>
+        );
       case "reports":
         return (
           <Card>

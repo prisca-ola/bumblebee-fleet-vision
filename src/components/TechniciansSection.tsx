@@ -30,6 +30,7 @@ interface Technician {
   assignedVehicle?: string;
   completedRepairs: number;
   location: string;
+  sourcingType: "in-house" | "roadside" | "third-party";
 }
 
 export default function TechniciansSection() {
@@ -45,7 +46,8 @@ export default function TechniciansSection() {
       specialization: "Engine Repair",
       status: "Available",
       completedRepairs: 42,
-      location: "Lagos Workshop"
+      location: "Lagos Workshop",
+      sourcingType: "in-house"
     },
     {
       id: "TECH-002",
@@ -56,7 +58,8 @@ export default function TechniciansSection() {
       status: "Assigned",
       assignedVehicle: "NGN-45-XYZ",
       completedRepairs: 38,
-      location: "Abuja Service Center"
+      location: "Abuja Service Center",
+      sourcingType: "in-house"
     },
     {
       id: "TECH-003",
@@ -66,7 +69,8 @@ export default function TechniciansSection() {
       specialization: "Brake Systems",
       status: "Available",
       completedRepairs: 29,
-      location: "Kano Workshop"
+      location: "Kano Workshop",
+      sourcingType: "roadside"
     },
     {
       id: "TECH-004",
@@ -76,7 +80,8 @@ export default function TechniciansSection() {
       specialization: "Transmission",
       status: "Off Duty",
       completedRepairs: 51,
-      location: "Port Harcourt Center"
+      location: "Port Harcourt Center",
+      sourcingType: "third-party"
     },
     {
       id: "TECH-005",
@@ -87,7 +92,8 @@ export default function TechniciansSection() {
       status: "Assigned",
       assignedVehicle: "NGN-12-ABC",
       completedRepairs: 33,
-      location: "Kaduna Workshop"
+      location: "Kaduna Workshop",
+      sourcingType: "roadside"
     }
   ]);
 
@@ -105,6 +111,19 @@ export default function TechniciansSection() {
         return "bg-warning/10 text-warning border-warning/20";
       case "Off Duty":
         return "bg-muted/10 text-muted-foreground border-muted/20";
+      default:
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+    }
+  };
+
+  const getSourcingTypeColor = (type: string) => {
+    switch (type) {
+      case "in-house":
+        return "bg-success/10 text-success border-success/20";
+      case "roadside":
+        return "bg-primary/10 text-primary border-primary/20";
+      case "third-party":
+        return "bg-info/10 text-info border-info/20";
       default:
         return "bg-muted/10 text-muted-foreground border-muted/20";
     }
@@ -205,6 +224,7 @@ export default function TechniciansSection() {
                   <TableHead>Specialization</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Location</TableHead>
+                  <TableHead>Sourcing Type</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Assigned Vehicle</TableHead>
                   <TableHead>Completed Repairs</TableHead>
@@ -242,6 +262,11 @@ export default function TechniciansSection() {
                         <MapPin className="h-3 w-3 text-muted-foreground" />
                         <span className="text-sm">{technician.location}</span>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getSourcingTypeColor(technician.sourcingType)}>
+                        {technician.sourcingType.replace('-', ' ').toUpperCase()}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(technician.status)}>
