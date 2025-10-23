@@ -44,7 +44,6 @@ const mainNavigationItems: NavigationItem[] = [
 const systemNavigationItems: NavigationItem[] = [
   { title: "Maintenance", value: "maintenance", icon: Shield },
   { title: "Issues", value: "issues", icon: AlertTriangle },
-  { title: "Tech Map", value: "tech-map", icon: MapPin },
   { title: "Parts Inventory", value: "parts", icon: Package },
   { title: "Reports", value: "reports", icon: BarChart3 },
   { title: "Settings", value: "settings", icon: Settings },
