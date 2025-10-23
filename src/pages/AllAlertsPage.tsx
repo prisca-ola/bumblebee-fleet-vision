@@ -3,7 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { 
   AlertTriangle, 
   Phone, 
@@ -83,8 +87,14 @@ const dtcDatabase: Record<string, DtcCode> = {
 
 const AllAlertsPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState<EmergencyAlert | null>(null);
+  const [technicianName, setTechnicianName] = useState("");
+  const [additionalDetails, setAdditionalDetails] = useState("");
+  const [workOrder, setWorkOrder] = useState("");
 
   // Mock alerts with DTC codes
   const [alerts, setAlerts] = useState<EmergencyAlert[]>([
@@ -157,6 +167,34 @@ const AllAlertsPage = () => {
 
   const dismissAlert = (alertId: string) => {
     setAlerts(alerts.filter(alert => alert.id !== alertId));
+  };
+
+  const handleAssignTechnician = (alert: EmergencyAlert) => {
+    setSelectedAlert(alert);
+    setIsAssignDialogOpen(true);
+  };
+
+  const handleSubmitAssignment = () => {
+    if (!technicianName || !workOrder) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in technician name and work order.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Technician Assigned",
+      description: `${technicianName} has been assigned to ${selectedAlert?.vehicleId}`,
+    });
+
+    // Reset form
+    setTechnicianName("");
+    setAdditionalDetails("");
+    setWorkOrder("");
+    setIsAssignDialogOpen(false);
+    setSelectedAlert(null);
   };
 
   // Filter alerts based on search and severity
@@ -352,7 +390,7 @@ const AllAlertsPage = () => {
                         <MapPin className="h-3 w-3 mr-1" />
                         View Location
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleAssignTechnician(alert)}>
                         Assign Technician
                       </Button>
                     </div>
@@ -363,6 +401,60 @@ const AllAlertsPage = () => {
           ))
         )}
       </div>
+
+      {/* Assign Technician Dialog */}
+      <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Assign Technician</DialogTitle>
+            <DialogDescription>
+              Assign a technician to {selectedAlert?.vehicleId} - {selectedAlert?.issue}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="technician-name">Technician Name *</Label>
+              <Input
+                id="technician-name"
+                placeholder="Enter technician name"
+                value={technicianName}
+                onChange={(e) => setTechnicianName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="additional-details">Additional Complaints / Issue Details</Label>
+              <Textarea
+                id="additional-details"
+                placeholder="Describe any additional issues or complaints..."
+                value={additionalDetails}
+                onChange={(e) => setAdditionalDetails(e.target.value)}
+                rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="work-order">Work Order *</Label>
+              <Input
+                id="work-order"
+                placeholder="Enter work order number or description"
+                value={workOrder}
+                onChange={(e) => setWorkOrder(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmitAssignment}>
+              Assign Technician
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
