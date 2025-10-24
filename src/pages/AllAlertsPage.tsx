@@ -237,9 +237,27 @@ const AllAlertsPage = () => {
       return;
     }
 
+    // Generate unique link for the work order
+    const workOrderLink = `${window.location.origin}/work-order/${workOrderId}`;
+
     toast({
       title: "Work Order Created",
       description: `${workOrderId} assigned to ${assignedTechnician}`,
+      action: (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            navigator.clipboard.writeText(workOrderLink);
+            toast({
+              title: "Link Copied",
+              description: "Work order link copied to clipboard",
+            });
+          }}
+        >
+          Copy Link
+        </Button>
+      ),
     });
 
     // Reset form

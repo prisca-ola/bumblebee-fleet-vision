@@ -312,118 +312,120 @@ export default function TechniciansSection() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Specialization</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Sourcing Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Assigned Vehicle</TableHead>
-                  <TableHead>Completed Repairs</TableHead>
-                  <TableHead>Avg Completion Rate</TableHead>
-                  <TableHead>Time of Completion</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTechnicians.map((technician) => (
-                  <TableRow key={technician.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{technician.name}</p>
-                        <p className="text-sm text-muted-foreground">{technician.id}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {technician.specialization}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1">
-                          <Phone className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{technician.phone}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{technician.email}</span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm">{technician.location}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getSourcingTypeColor(technician.sourcingType)}>
-                        {technician.sourcingType.replace('-', ' ').toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(technician.status)}>
-                        {technician.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {technician.assignedVehicle ? (
-                        <span className="font-medium">{technician.assignedVehicle}</span>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium">{technician.completedRepairs}</span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{technician.avgCompletionRate}h</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {technician.timeOfCompletion ? (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{technician.timeOfCompletion}</span>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleAction("View Profile", technician.id)}>
-                            View Profile
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAction("Assign Vehicle", technician.id)}>
-                            Assign Vehicle
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleViewWorkOrder(technician)}>
-                            View Work Order
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAction("Edit", technician.id)}>
-                            Edit Details
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+          <div className="overflow-x-auto">
+            <div className="rounded-md border min-w-max">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap">Name</TableHead>
+                    <TableHead className="whitespace-nowrap">Specialization</TableHead>
+                    <TableHead className="whitespace-nowrap">Contact</TableHead>
+                    <TableHead className="whitespace-nowrap">Location</TableHead>
+                    <TableHead className="whitespace-nowrap">Sourcing Type</TableHead>
+                    <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="whitespace-nowrap">Assigned Vehicle</TableHead>
+                    <TableHead className="whitespace-nowrap">Completed Repairs</TableHead>
+                    <TableHead className="whitespace-nowrap">Avg Completion Rate</TableHead>
+                    <TableHead className="whitespace-nowrap">Time of Completion</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredTechnicians.map((technician) => (
+                    <TableRow key={technician.id}>
+                      <TableCell className="whitespace-nowrap">
+                        <div>
+                          <p className="font-medium">{technician.name}</p>
+                          <p className="text-sm text-muted-foreground">{technician.id}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge variant="outline">
+                          {technician.specialization}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1">
+                            <Phone className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">{technician.phone}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Mail className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">{technician.email}</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-sm">{technician.location}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge className={getSourcingTypeColor(technician.sourcingType)}>
+                          {technician.sourcingType.replace('-', ' ').toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge className={getStatusColor(technician.status)}>
+                          {technician.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {technician.assignedVehicle ? (
+                          <span className="font-medium">{technician.assignedVehicle}</span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <span className="font-medium">{technician.completedRepairs}</span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                          <span className="font-medium">{technician.avgCompletionRate}h</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {technician.timeOfCompletion ? (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">{technician.timeOfCompletion}</span>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right whitespace-nowrap">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleAction("View Profile", technician.id)}>
+                              View Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAction("Assign Vehicle", technician.id)}>
+                              Assign Vehicle
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewWorkOrder(technician)}>
+                              View Work Order
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAction("Edit", technician.id)}>
+                              Edit Details
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           {filteredTechnicians.length === 0 && (
