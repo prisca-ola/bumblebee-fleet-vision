@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -90,11 +93,25 @@ const AllAlertsPage = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
-  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [isAssignSheetOpen, setIsAssignSheetOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<EmergencyAlert | null>(null);
-  const [technicianName, setTechnicianName] = useState("");
-  const [additionalDetails, setAdditionalDetails] = useState("");
-  const [workOrder, setWorkOrder] = useState("");
+  
+  // Form state
+  const [workOrderId, setWorkOrderId] = useState("");
+  const [issueTitle, setIssueTitle] = useState("");
+  const [vehicleInfo, setVehicleInfo] = useState("");
+  const [reportedBy, setReportedBy] = useState("");
+  const [dateReported, setDateReported] = useState("");
+  const [issueDescription, setIssueDescription] = useState("");
+  const [assignedTechnician, setAssignedTechnician] = useState("");
+  const [estimatedRepairTime, setEstimatedRepairTime] = useState("");
+  const [estimatedCompletion, setEstimatedCompletion] = useState("");
+  const [currentStatus, setCurrentStatus] = useState("Pending");
+  const [workProgress, setWorkProgress] = useState([0]);
+  const [technicianNotes, setTechnicianNotes] = useState("");
+  const [vehicleLocation, setVehicleLocation] = useState("");
+  const [requiredParts, setRequiredParts] = useState("");
+  const [managerApproved, setManagerApproved] = useState(false);
 
   // Mock alerts with DTC codes
   const [alerts, setAlerts] = useState<EmergencyAlert[]>([
@@ -169,32 +186,90 @@ const AllAlertsPage = () => {
     setAlerts(alerts.filter(alert => alert.id !== alertId));
   };
 
+  // Generate unique Work Order ID
+  const generateWorkOrderId = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `WO-${timestamp}-${random}`;
+  };
+
+  // Calculate estimated completion date
+  const calculateCompletionDate = (repairTime: string) => {
+    if (!repairTime) return "";
+    const match = repairTime.match(/(\d+)\s*(hour|day)s?/i);
+    if (!match) return "";
+    
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    const now = new Date();
+    
+    if (unit === "hour") {
+      now.setHours(now.getHours() + value);
+    } else if (unit === "day") {
+      now.setDate(now.getDate() + value);
+    }
+    
+    return now.toLocaleString();
+  };
+
   const handleAssignTechnician = (alert: EmergencyAlert) => {
     setSelectedAlert(alert);
-    setIsAssignDialogOpen(true);
+    
+    // Auto-fill fields
+    setWorkOrderId(generateWorkOrderId());
+    setIssueTitle(alert.issue);
+    setVehicleInfo(alert.vehicleId);
+    setReportedBy(alert.driver);
+    setDateReported(alert.timestamp);
+    setIssueDescription(alert.issue + (alert.dtcCode ? `\n\nDTC Code: ${alert.dtcCode.code}\n${alert.dtcCode.description}` : ''));
+    setVehicleLocation(alert.location);
+    
+    setIsAssignSheetOpen(true);
   };
 
   const handleSubmitAssignment = () => {
-    if (!technicianName || !workOrder) {
+    if (!assignedTechnician) {
       toast({
         title: "Missing Information",
-        description: "Please fill in technician name and work order.",
+        description: "Please assign a technician.",
         variant: "destructive"
       });
       return;
     }
 
     toast({
-      title: "Technician Assigned",
-      description: `${technicianName} has been assigned to ${selectedAlert?.vehicleId}`,
+      title: "Work Order Created",
+      description: `${workOrderId} assigned to ${assignedTechnician}`,
     });
 
     // Reset form
-    setTechnicianName("");
-    setAdditionalDetails("");
-    setWorkOrder("");
-    setIsAssignDialogOpen(false);
+    resetForm();
+    setIsAssignSheetOpen(false);
     setSelectedAlert(null);
+  };
+
+  const resetForm = () => {
+    setWorkOrderId("");
+    setIssueTitle("");
+    setVehicleInfo("");
+    setReportedBy("");
+    setDateReported("");
+    setIssueDescription("");
+    setAssignedTechnician("");
+    setEstimatedRepairTime("");
+    setEstimatedCompletion("");
+    setCurrentStatus("Pending");
+    setWorkProgress([0]);
+    setTechnicianNotes("");
+    setVehicleLocation("");
+    setRequiredParts("");
+    setManagerApproved(false);
+  };
+
+  // Update completion date when repair time changes
+  const handleRepairTimeChange = (value: string) => {
+    setEstimatedRepairTime(value);
+    setEstimatedCompletion(calculateCompletionDate(value));
   };
 
   // Filter alerts based on search and severity
@@ -402,59 +477,226 @@ const AllAlertsPage = () => {
         )}
       </div>
 
-      {/* Assign Technician Dialog */}
-      <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Assign Technician</DialogTitle>
-            <DialogDescription>
-              Assign a technician to {selectedAlert?.vehicleId} - {selectedAlert?.issue}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="technician-name">Technician Name *</Label>
-              <Input
-                id="technician-name"
-                placeholder="Enter technician name"
-                value={technicianName}
-                onChange={(e) => setTechnicianName(e.target.value)}
-              />
+      {/* Assign Technician Sheet */}
+      <Sheet open={isAssignSheetOpen} onOpenChange={setIsAssignSheetOpen}>
+        <SheetContent side="right" className="sm:max-w-[600px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Create Work Order</SheetTitle>
+            <SheetDescription>
+              Assign technician and manage repair details
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-6 py-6">
+            {/* Header Info */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Header Info</h3>
+              
+              <div className="space-y-2">
+                <Label>Work Order ID</Label>
+                <Input value={workOrderId} disabled className="font-mono bg-muted" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="issue-title">Issue Title</Label>
+                <Input
+                  id="issue-title"
+                  value={issueTitle}
+                  onChange={(e) => setIssueTitle(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Vehicle ID / Plate Number</Label>
+                <Input value={vehicleInfo} disabled className="bg-muted" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Reported By</Label>
+                <Input value={reportedBy} disabled className="bg-muted" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Date Reported</Label>
+                <Input value={dateReported} disabled className="bg-muted" />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="additional-details">Additional Complaints / Issue Details</Label>
-              <Textarea
-                id="additional-details"
-                placeholder="Describe any additional issues or complaints..."
-                value={additionalDetails}
-                onChange={(e) => setAdditionalDetails(e.target.value)}
-                rows={4}
-              />
+            <Separator />
+
+            {/* Issue Details */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Issue Details</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="issue-description">Issue Description</Label>
+                <Textarea
+                  id="issue-description"
+                  value={issueDescription}
+                  onChange={(e) => setIssueDescription(e.target.value)}
+                  rows={5}
+                  placeholder="Full description of the problem..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Attachments</Label>
+                <div className="border-2 border-dashed rounded-lg p-4 text-center text-sm text-muted-foreground">
+                  No attachments from driver report
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="work-order">Work Order *</Label>
-              <Input
-                id="work-order"
-                placeholder="Enter work order number or description"
-                value={workOrder}
-                onChange={(e) => setWorkOrder(e.target.value)}
-              />
+            <Separator />
+
+            {/* Repair Details */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Repair Details (Technician Section)</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="assigned-technician">Assigned Technician *</Label>
+                <Input
+                  id="assigned-technician"
+                  value={assignedTechnician}
+                  onChange={(e) => setAssignedTechnician(e.target.value)}
+                  placeholder="Enter name or email address"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="estimated-repair-time">Estimated Repair Time</Label>
+                <Input
+                  id="estimated-repair-time"
+                  value={estimatedRepairTime}
+                  onChange={(e) => handleRepairTimeChange(e.target.value)}
+                  placeholder="e.g., 2 hours or 3 days"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Estimated Completion Date</Label>
+                <Input 
+                  value={estimatedCompletion} 
+                  disabled 
+                  className="bg-muted"
+                  placeholder="Auto-calculated from repair time"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="current-status">Current Status</Label>
+                <Select value={currentStatus} onValueChange={setCurrentStatus}>
+                  <SelectTrigger id="current-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Paused">Paused</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Work Progress ({workProgress[0]}%)</Label>
+                <Slider
+                  value={workProgress}
+                  onValueChange={setWorkProgress}
+                  max={100}
+                  step={5}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="technician-notes">Technician Notes</Label>
+                <Textarea
+                  id="technician-notes"
+                  value={technicianNotes}
+                  onChange={(e) => setTechnicianNotes(e.target.value)}
+                  rows={3}
+                  placeholder="Optional comments during execution..."
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Logistics */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Logistics</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="vehicle-location">Vehicle Location</Label>
+                <Input
+                  id="vehicle-location"
+                  value={vehicleLocation}
+                  onChange={(e) => setVehicleLocation(e.target.value)}
+                  placeholder="e.g., Workshop 3 or GPS coordinates"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="required-parts">Required Parts/Materials</Label>
+                <Textarea
+                  id="required-parts"
+                  value={requiredParts}
+                  onChange={(e) => setRequiredParts(e.target.value)}
+                  rows={2}
+                  placeholder="List required parts or materials..."
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="manager-approved"
+                  checked={managerApproved}
+                  onCheckedChange={(checked) => setManagerApproved(checked as boolean)}
+                />
+                <Label
+                  htmlFor="manager-approved"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Manager approved for repair
+                </Label>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Audit Trail */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Audit Trail</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Created By</Label>
+                  <Input value="Fleet Manager" disabled className="bg-muted" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Last Updated</Label>
+                  <Input value={new Date().toLocaleString()} disabled className="bg-muted" />
+                </div>
+              </div>
+
+              <div className="text-xs text-muted-foreground">
+                Version tracking available in full system implementation
+              </div>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
+          <SheetFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsAssignSheetOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSubmitAssignment}>
-              Assign Technician
+              Create Work Order
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
