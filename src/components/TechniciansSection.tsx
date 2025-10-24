@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -18,7 +19,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Plus, MoreHorizontal, Wrench, Phone, Mail, MapPin } from "lucide-react";
+import { Search, Plus, MoreHorizontal, Wrench, Phone, Mail, MapPin, Clock, TrendingUp, FileText } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface WorkOrder {
+  id: string;
+  issueTitle: string;
+  vehicleInfo: string;
+  reportedBy: string;
+  dateReported: string;
+  issueDescription: string;
+  estimatedRepairTime: string;
+  estimatedCompletion: string;
+  currentStatus: string;
+  workProgress: number;
+  technicianNotes: string;
+  vehicleLocation: string;
+  requiredParts: string;
+  managerApproved: boolean;
+  completionTime?: string;
+}
 
 interface Technician {
   id: string;
@@ -31,11 +52,16 @@ interface Technician {
   completedRepairs: number;
   location: string;
   sourcingType: "in-house" | "roadside" | "third-party";
+  avgCompletionRate: number; // hours per repair
+  timeOfCompletion?: string; // last completion time
+  workOrders: WorkOrder[];
 }
 
 export default function TechniciansSection() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isWorkOrderSheetOpen, setIsWorkOrderSheetOpen] = useState(false);
+  const [selectedTechnician, setSelectedTechnician] = useState<Technician | null>(null);
 
   const [technicians] = useState<Technician[]>([
     {
@@ -47,7 +73,28 @@ export default function TechniciansSection() {
       status: "Available",
       completedRepairs: 42,
       location: "Lagos Workshop",
-      sourcingType: "in-house"
+      sourcingType: "in-house",
+      avgCompletionRate: 3.2,
+      timeOfCompletion: "2024-01-10 14:30",
+      workOrders: [
+        {
+          id: "WO-1736780000-123",
+          issueTitle: "Engine overheating - temperature critical",
+          vehicleInfo: "TRK-007",
+          reportedBy: "Emeka Nwankwo (+234-801-234-5678)",
+          dateReported: "2024-01-08 10:45",
+          issueDescription: "Engine temperature gauge showing critical levels. Need immediate inspection.",
+          estimatedRepairTime: "4 hours",
+          estimatedCompletion: "2024-01-08 18:00",
+          currentStatus: "Completed",
+          workProgress: 100,
+          technicianNotes: "Replaced coolant pump and thermostat. System tested and functioning normally.",
+          vehicleLocation: "Lagos Workshop",
+          requiredParts: "Coolant pump, thermostat, coolant fluid",
+          managerApproved: true,
+          completionTime: "2024-01-10 14:30"
+        }
+      ]
     },
     {
       id: "TECH-002",
@@ -59,7 +106,27 @@ export default function TechniciansSection() {
       assignedVehicle: "NGN-45-XYZ",
       completedRepairs: 38,
       location: "Abuja Service Center",
-      sourcingType: "in-house"
+      sourcingType: "in-house",
+      avgCompletionRate: 2.8,
+      timeOfCompletion: "2024-01-11 09:15",
+      workOrders: [
+        {
+          id: "WO-1736790000-456",
+          issueTitle: "Electrical system failure",
+          vehicleInfo: "NGN-45-XYZ",
+          reportedBy: "John Doe (+234-803-765-4321)",
+          dateReported: "2024-01-11 07:00",
+          issueDescription: "Complete electrical failure. Battery and alternator diagnostics required.",
+          estimatedRepairTime: "3 hours",
+          estimatedCompletion: "2024-01-11 12:00",
+          currentStatus: "In Progress",
+          workProgress: 65,
+          technicianNotes: "Battery replaced. Currently testing alternator and checking wiring harness.",
+          vehicleLocation: "Abuja Service Center",
+          requiredParts: "Battery, alternator belt",
+          managerApproved: true
+        }
+      ]
     },
     {
       id: "TECH-003",
@@ -70,7 +137,10 @@ export default function TechniciansSection() {
       status: "Available",
       completedRepairs: 29,
       location: "Kano Workshop",
-      sourcingType: "roadside"
+      sourcingType: "roadside",
+      avgCompletionRate: 4.1,
+      timeOfCompletion: "2024-01-09 16:45",
+      workOrders: []
     },
     {
       id: "TECH-004",
@@ -81,7 +151,10 @@ export default function TechniciansSection() {
       status: "Off Duty",
       completedRepairs: 51,
       location: "Port Harcourt Center",
-      sourcingType: "third-party"
+      sourcingType: "third-party",
+      avgCompletionRate: 5.6,
+      timeOfCompletion: "2024-01-07 11:20",
+      workOrders: []
     },
     {
       id: "TECH-005",
@@ -93,7 +166,10 @@ export default function TechniciansSection() {
       assignedVehicle: "NGN-12-ABC",
       completedRepairs: 33,
       location: "Kaduna Workshop",
-      sourcingType: "roadside"
+      sourcingType: "roadside",
+      avgCompletionRate: 3.5,
+      timeOfCompletion: "2024-01-12 08:00",
+      workOrders: []
     }
   ]);
 
@@ -136,11 +212,31 @@ export default function TechniciansSection() {
     });
   };
 
+  const handleViewWorkOrder = (technician: Technician) => {
+    setSelectedTechnician(technician);
+    setIsWorkOrderSheetOpen(true);
+  };
+
   const handleAction = (action: string, techId: string) => {
     toast({
       title: action,
       description: `Action ${action.toLowerCase()} performed for technician ${techId}`,
     });
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "Completed":
+        return "bg-success/10 text-success border-success/20";
+      case "In Progress":
+        return "bg-warning/10 text-warning border-warning/20";
+      case "Pending":
+        return "bg-info/10 text-info border-info/20";
+      case "Paused":
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+      default:
+        return "bg-muted/10 text-muted-foreground border-muted/20";
+    }
   };
 
   return (
@@ -228,6 +324,8 @@ export default function TechniciansSection() {
                   <TableHead>Status</TableHead>
                   <TableHead>Assigned Vehicle</TableHead>
                   <TableHead>Completed Repairs</TableHead>
+                  <TableHead>Avg Completion Rate</TableHead>
+                  <TableHead>Time of Completion</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -283,6 +381,22 @@ export default function TechniciansSection() {
                     <TableCell>
                       <span className="font-medium">{technician.completedRepairs}</span>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                        <span className="font-medium">{technician.avgCompletionRate}h</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {technician.timeOfCompletion ? (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-sm">{technician.timeOfCompletion}</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -297,8 +411,8 @@ export default function TechniciansSection() {
                           <DropdownMenuItem onClick={() => handleAction("Assign Vehicle", technician.id)}>
                             Assign Vehicle
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAction("View Work History", technician.id)}>
-                            Work History
+                          <DropdownMenuItem onClick={() => handleViewWorkOrder(technician)}>
+                            View Work Order
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleAction("Edit", technician.id)}>
                             Edit Details
@@ -320,6 +434,129 @@ export default function TechniciansSection() {
           )}
         </CardContent>
       </Card>
+
+      {/* Work Order Sheet */}
+      <Sheet open={isWorkOrderSheetOpen} onOpenChange={setIsWorkOrderSheetOpen}>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Work Orders - {selectedTechnician?.name}</SheetTitle>
+            <SheetDescription>
+              View all work orders assigned to this technician
+            </SheetDescription>
+          </SheetHeader>
+
+          <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+            {selectedTechnician?.workOrders && selectedTechnician.workOrders.length > 0 ? (
+              <div className="space-y-6">
+                {selectedTechnician.workOrders.map((workOrder) => (
+                  <Card key={workOrder.id} className="border-2">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">{workOrder.issueTitle}</CardTitle>
+                          <p className="text-sm text-muted-foreground mt-1">Work Order ID: {workOrder.id}</p>
+                        </div>
+                        <Badge className={getStatusBadgeColor(workOrder.currentStatus)}>
+                          {workOrder.currentStatus}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Header Info */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Vehicle ID</Label>
+                          <p className="font-medium">{workOrder.vehicleInfo}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Reported By</Label>
+                          <p className="font-medium">{workOrder.reportedBy}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Date Reported</Label>
+                          <p className="font-medium">{workOrder.dateReported}</p>
+                        </div>
+                        {workOrder.completionTime && (
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Completed At</Label>
+                            <p className="font-medium text-success">{workOrder.completionTime}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="border-t pt-4">
+                        <Label className="text-xs text-muted-foreground">Issue Description</Label>
+                        <p className="mt-1">{workOrder.issueDescription}</p>
+                      </div>
+
+                      {/* Repair Details */}
+                      <div className="border-t pt-4 space-y-3">
+                        <h4 className="font-semibold text-sm">Repair Details</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Estimated Repair Time</Label>
+                            <p className="font-medium">{workOrder.estimatedRepairTime}</p>
+                          </div>
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Estimated Completion</Label>
+                            <p className="font-medium">{workOrder.estimatedCompletion}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Work Progress</Label>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-primary transition-all"
+                                style={{ width: `${workOrder.workProgress}%` }}
+                              />
+                            </div>
+                            <span className="text-sm font-medium">{workOrder.workProgress}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Technician Notes */}
+                      {workOrder.technicianNotes && (
+                        <div className="border-t pt-4">
+                          <Label className="text-xs text-muted-foreground">Technician Notes</Label>
+                          <p className="mt-1 text-sm">{workOrder.technicianNotes}</p>
+                        </div>
+                      )}
+
+                      {/* Logistics */}
+                      <div className="border-t pt-4 space-y-3">
+                        <h4 className="font-semibold text-sm">Logistics</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Vehicle Location</Label>
+                            <p className="font-medium">{workOrder.vehicleLocation}</p>
+                          </div>
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Manager Approved</Label>
+                            <p className="font-medium">{workOrder.managerApproved ? "Yes" : "No"}</p>
+                          </div>
+                        </div>
+                        {workOrder.requiredParts && (
+                          <div>
+                            <Label className="text-xs text-muted-foreground">Required Parts</Label>
+                            <p className="mt-1 text-sm">{workOrder.requiredParts}</p>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
+                <p className="text-muted-foreground">No work orders found for this technician.</p>
+              </div>
+            )}
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
