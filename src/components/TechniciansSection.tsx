@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,9 @@ export default function TechniciansSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isWorkOrderSheetOpen, setIsWorkOrderSheetOpen] = useState(false);
   const [selectedTechnician, setSelectedTechnician] = useState<Technician | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterSpecialization, setFilterSpecialization] = useState<string>("all");
+  const [filterLocation, setFilterLocation] = useState<string>("all");
 
   const [technicians] = useState<Technician[]>([
     {
@@ -173,11 +177,22 @@ export default function TechniciansSection() {
     }
   ]);
 
-  const filteredTechnicians = technicians.filter(tech =>
-    tech.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tech.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tech.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get unique values for filters
+  const uniqueStatuses = Array.from(new Set(technicians.map(t => t.status)));
+  const uniqueSpecializations = Array.from(new Set(technicians.map(t => t.specialization)));
+  const uniqueLocations = Array.from(new Set(technicians.map(t => t.location)));
+
+  const filteredTechnicians = technicians.filter(tech => {
+    const matchesSearch = tech.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.location.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = filterStatus === "all" || tech.status === filterStatus;
+    const matchesSpecialization = filterSpecialization === "all" || tech.specialization === filterSpecialization;
+    const matchesLocation = filterLocation === "all" || tech.location === filterLocation;
+
+    return matchesSearch && matchesStatus && matchesSpecialization && matchesLocation;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -256,6 +271,45 @@ export default function TechniciansSection() {
           <Plus className="h-4 w-4" />
           Add Technician
         </Button>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {uniqueStatuses.map(status => (
+              <SelectItem key={status} value={status}>{status}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterSpecialization} onValueChange={setFilterSpecialization}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Specialization" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Specializations</SelectItem>
+            {uniqueSpecializations.map(spec => (
+              <SelectItem key={spec} value={spec}>{spec}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterLocation} onValueChange={setFilterLocation}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Location" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Locations</SelectItem>
+            {uniqueLocations.map(location => (
+              <SelectItem key={location} value={location}>{location}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Statistics Cards */}

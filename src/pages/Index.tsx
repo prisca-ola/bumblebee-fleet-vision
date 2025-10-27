@@ -12,6 +12,7 @@ import SettingsSection from "@/components/SettingsSection";
 import LiveMap from "@/components/LiveMap";
 
 import PartsInventory from "@/components/PartsInventory";
+import ActionableInsights from "@/pages/ActionableInsights";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -96,6 +97,8 @@ const Index = () => {
             </CardContent>
           </Card>
         );
+      case "insights":
+        return <ActionableInsights />;
       case "reports":
         return (
           <Card>

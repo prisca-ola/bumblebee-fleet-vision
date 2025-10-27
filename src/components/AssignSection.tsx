@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { UserPlus, Search, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -91,10 +92,13 @@ const AssignSection = () => {
   const [assignments, setAssignments] = useState<Assignment[]>(mockAssignments);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [newAssignment, setNewAssignment] = useState({
     name: "",
     role: "" as "driver" | "technician",
     vehicleAssigned: "",
+    note: "",
   });
 
   const handleAddAssignment = () => {
@@ -108,7 +112,7 @@ const AssignSection = () => {
         status: "active",
       };
       setAssignments([...assignments, assignment]);
-      setNewAssignment({ name: "", role: "" as "driver" | "technician", vehicleAssigned: "" });
+      setNewAssignment({ name: "", role: "" as "driver" | "technician", vehicleAssigned: "", note: "" });
       setIsDialogOpen(false);
     }
   };
@@ -132,10 +136,19 @@ const AssignSection = () => {
       <Badge className="bg-primary/10 text-primary border-primary/20">Technician</Badge>;
   };
 
-  const filteredAssignments = assignments.filter(assignment =>
-    assignment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.vehicleAssigned.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get unique values for filters
+  const uniqueRoles = Array.from(new Set(assignments.map(a => a.role)));
+  const uniqueStatuses = Array.from(new Set(assignments.map(a => a.status)));
+
+  const filteredAssignments = assignments.filter(assignment => {
+    const matchesSearch = assignment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assignment.vehicleAssigned.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRole = filterRole === "all" || assignment.role === filterRole;
+    const matchesStatus = filterStatus === "all" || assignment.status === filterStatus;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -213,6 +226,16 @@ const AssignSection = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="note">Add Note (Optional)</Label>
+                <Textarea
+                  id="note"
+                  placeholder="Enter any additional notes about this assignment..."
+                  value={newAssignment.note}
+                  onChange={(e) => setNewAssignment({ ...newAssignment, note: e.target.value })}
+                  rows={3}
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" onClick={handleAddAssignment}>
@@ -221,6 +244,33 @@ const AssignSection = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Select value={filterRole} onValueChange={setFilterRole}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Roles</SelectItem>
+            {uniqueRoles.map(role => (
+              <SelectItem key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {uniqueStatuses.map(status => (
+              <SelectItem key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Assignments Table */}

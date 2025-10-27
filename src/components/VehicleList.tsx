@@ -249,8 +249,9 @@ const VehicleList = ({ drivers }: VehicleListProps) => {
       </div>
 
       {/* Vehicles Table */}
-      <div className="border rounded-lg overflow-x-auto">
-        <Table>
+      <div className="overflow-x-auto">
+        <div className="border rounded-lg min-w-max">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="whitespace-nowrap">Vehicle</TableHead>
@@ -340,6 +341,7 @@ const VehicleList = ({ drivers }: VehicleListProps) => {
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       {filteredVehicles.length === 0 && (

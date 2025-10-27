@@ -190,62 +190,6 @@ const FleetOverview = () => {
         </CardContent>
       </Card>
 
-      {/* Actionable Insights - Priority Section */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-primary" />
-            <CardTitle className="text-xl font-bold">Actionable Insights & Recommendations</CardTitle>
-          </div>
-          <CardDescription className="mt-2">
-            Smart recommendations to reduce costs, minimize downtime, and improve performance
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {actionableInsights.map((insight) => {
-            const IconComponent = insight.icon;
-            return (
-              <Card key={insight.id} className="border-border hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-lg ${
-                      insight.color === 'success' ? 'bg-success/10' :
-                      insight.color === 'warning' ? 'bg-warning/10' :
-                      insight.color === 'critical' ? 'bg-critical/10' :
-                      'bg-primary/10'
-                    }`}>
-                      <IconComponent className={`h-6 w-6 ${
-                        insight.color === 'success' ? 'text-success' :
-                        insight.color === 'warning' ? 'text-warning' :
-                        insight.color === 'critical' ? 'text-critical' :
-                        'text-primary'
-                      }`} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <h4 className="font-semibold text-base">{insight.title}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                            <DollarSign className="h-3 w-3 mr-1" />
-                            {insight.savings}
-                          </Badge>
-                          <div className="text-xs text-muted-foreground mt-1">{insight.impact}</div>
-                        </div>
-                      </div>
-                      <Button size="sm" className="mt-3">
-                        Take Action
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </CardContent>
-      </Card>
 
       {/* Issues Breakdown and Upcoming Services */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

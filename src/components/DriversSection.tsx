@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   User, 
   Search, 
@@ -38,6 +39,8 @@ export interface Driver {
 const DriversSection = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddDriver, setShowAddDriver] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterVehicle, setFilterVehicle] = useState<string>("all");
   const [drivers, setDrivers] = useState<Driver[]>([
     {
       id: "DRV-001",
@@ -95,11 +98,20 @@ const DriversSection = () => {
     }
   ]);
 
-  const filteredDrivers = drivers.filter(driver =>
-    driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    driver.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    driver.phone.includes(searchTerm)
-  );
+  // Get unique values for filters
+  const uniqueStatuses = Array.from(new Set(drivers.map(d => d.status)));
+  const uniqueVehicles = Array.from(new Set(drivers.map(d => d.assignedVehicle).filter(Boolean)));
+
+  const filteredDrivers = drivers.filter(driver => {
+    const matchesSearch = driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      driver.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      driver.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = filterStatus === "all" || driver.status === filterStatus;
+    const matchesVehicle = filterVehicle === "all" || driver.assignedVehicle === filterVehicle;
+
+    return matchesSearch && matchesStatus && matchesVehicle;
+  });
 
   const getStatusBadge = (status: Driver["status"]) => {
     switch (status) {
@@ -186,7 +198,7 @@ const DriversSection = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search drivers by name, license, or phone..."
+            placeholder="Search drivers by name, license, or email..."
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -196,6 +208,33 @@ const DriversSection = () => {
           <UserPlus className="h-4 w-4 mr-2" />
           Add Driver
         </Button>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {uniqueStatuses.map(status => (
+              <SelectItem key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterVehicle} onValueChange={setFilterVehicle}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by Vehicle" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Vehicles</SelectItem>
+            {uniqueVehicles.map(vehicle => (
+              <SelectItem key={vehicle} value={vehicle!}>{vehicle}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Drivers Table */}

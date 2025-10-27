@@ -11,7 +11,8 @@ import {
   BarChart3,
   Settings,
   MapPin,
-  Package
+  Package,
+  Lightbulb
 } from "lucide-react";
 import {
   Sidebar,
@@ -45,6 +46,7 @@ const systemNavigationItems: NavigationItem[] = [
   { title: "Maintenance", value: "maintenance", icon: Shield },
   { title: "Issues", value: "issues", icon: AlertTriangle },
   { title: "Parts Inventory", value: "parts", icon: Package },
+  { title: "Actionable Insights", value: "insights", icon: Lightbulb },
   { title: "Reports", value: "reports", icon: BarChart3 },
   { title: "Settings", value: "settings", icon: Settings },
 ];
