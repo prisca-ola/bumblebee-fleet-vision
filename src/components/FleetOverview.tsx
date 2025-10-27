@@ -120,34 +120,44 @@ const FleetOverview = () => {
           </CardContent>
         </Card>
 
-        {/* Average Fuel Economy */}
+        {/* Total Drivers */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Fuel Economy</CardTitle>
-            <Fuel className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">Total Drivers</CardTitle>
+            <Truck className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{fleetStats.averageFuelEconomy}L</div>
+            <div className="text-2xl font-bold">{fleetStats.activeDrivers}</div>
             <p className="text-xs text-muted-foreground">
-              Per 100km average
+              Active fleet drivers
             </p>
-            <div className="flex items-center text-xs text-success mt-1">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +2.3% vs last month
-            </div>
           </CardContent>
         </Card>
 
-        {/* Compliance Rate */}
+        {/* Total Technicians */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Compliance</CardTitle>
-            <Shield className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">Technicians</CardTitle>
+            <Wrench className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{fleetStats.complianceRate}%</div>
+            <div className="text-2xl font-bold">8</div>
             <p className="text-xs text-muted-foreground">
-              Licenses & insurance up to date
+              Available maintenance staff
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Total Vehicles */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
+            <Truck className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{fleetStats.totalVehicles}</div>
+            <p className="text-xs text-muted-foreground">
+              {fleetStats.healthyVehicles} healthy, {fleetStats.maintenanceNeeded} maintenance
             </p>
           </CardContent>
         </Card>
