@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, MoreHorizontal, Wrench, Phone, Mail, MapPin, Clock, TrendingUp, FileText } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AddTechnicianDialog } from "./AddTechnicianDialog";
 
 interface WorkOrder {
   id: string;
@@ -66,6 +67,7 @@ export default function TechniciansSection() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterSpecialization, setFilterSpecialization] = useState<string>("all");
   const [filterLocation, setFilterLocation] = useState<string>("all");
+  const [isAddTechnicianOpen, setIsAddTechnicianOpen] = useState(false);
 
   const [technicians] = useState<Technician[]>([
     {
@@ -221,10 +223,7 @@ export default function TechniciansSection() {
   };
 
   const handleAddTechnician = () => {
-    toast({
-      title: "Add Technician",
-      description: "Opening technician registration form...",
-    });
+    setIsAddTechnicianOpen(true);
   };
 
   const handleViewWorkOrder = (technician: Technician) => {
@@ -613,6 +612,11 @@ export default function TechniciansSection() {
           </ScrollArea>
         </SheetContent>
       </Sheet>
+
+      <AddTechnicianDialog 
+        open={isAddTechnicianOpen}
+        onOpenChange={setIsAddTechnicianOpen}
+      />
     </div>
   );
 }

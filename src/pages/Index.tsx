@@ -11,7 +11,7 @@ import ReportsSection from "@/components/ReportsSection";
 import SettingsSection from "@/components/SettingsSection";
 import LiveMap from "@/components/LiveMap";
 
-import PartsInventory from "@/components/PartsInventory";
+import ScheduledService from "@/components/ScheduledService";
 import ActionableInsights from "@/pages/ActionableInsights";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,17 +83,17 @@ const Index = () => {
         return <MaintenanceReminders />;
       case "issues":
         return <IssueReporting />;
-      case "parts":
+      case "scheduled-service":
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Parts & Inventory Management</CardTitle>
+              <CardTitle>Scheduled Services</CardTitle>
               <CardDescription>
-                Track inventory levels and predict parts needs based on maintenance history
+                View and manage all scheduled maintenance services on a calendar
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <PartsInventory />
+              <ScheduledService />
             </CardContent>
           </Card>
         );

@@ -14,6 +14,7 @@ import {
   Shield,
   FileText
 } from "lucide-react";
+import { ScheduleServiceDialog } from "./ScheduleServiceDialog";
 
 interface MaintenanceReminder {
   id: string;
@@ -43,6 +44,7 @@ interface ComplianceItem {
 
 const MaintenanceReminders = () => {
   const [activeTab, setActiveTab] = useState<"maintenance" | "compliance">("maintenance");
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   
   // Mock maintenance data
   const maintenanceReminders: MaintenanceReminder[] = [
@@ -188,7 +190,10 @@ const MaintenanceReminders = () => {
               <h3 className="text-lg font-semibold">Maintenance Schedule</h3>
               <p className="text-muted-foreground text-sm">Track upcoming services and maintenance tasks</p>
             </div>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button 
+              onClick={() => setIsScheduleDialogOpen(true)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Service
             </Button>
@@ -409,6 +414,11 @@ const MaintenanceReminders = () => {
           )}
         </div>
       )}
+
+      <ScheduleServiceDialog 
+        open={isScheduleDialogOpen}
+        onOpenChange={setIsScheduleDialogOpen}
+      />
     </div>
   );
 };
