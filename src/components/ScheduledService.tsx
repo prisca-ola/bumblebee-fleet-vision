@@ -1,8 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Calendar, momentLocalizer, View, Views } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -29,7 +27,6 @@ interface ScheduledServiceEvent {
 }
 
 export default function ScheduledService() {
-  const { toast } = useToast();
   const [view, setView] = useState<View>(Views.MONTH);
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<ScheduledServiceEvent | null>(null);
@@ -143,86 +140,81 @@ export default function ScheduledService() {
   }, []);
 
   return (
-    <div className="space-y-6 p-6">
-      <Card className="border-0 shadow-lg">
-        <CardContent className="p-6">
-          <div className="h-[calc(100vh-12rem)]">
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              view={view}
-              onView={setView}
-              date={date}
-              onNavigate={setDate}
-              eventPropGetter={eventStyleGetter}
-              onSelectEvent={handleSelectEvent}
-              views={[Views.MONTH, Views.WEEK, Views.DAY]}
-              popup
-              className="rounded-lg"
-              style={{ height: "100%" }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+    <div className="p-8 max-w-[1600px] mx-auto">
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
+        <div className="h-[calc(100vh-16rem)]">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            view={view}
+            onView={setView}
+            date={date}
+            onNavigate={setDate}
+            eventPropGetter={eventStyleGetter}
+            onSelectEvent={handleSelectEvent}
+            views={[Views.MONTH, Views.WEEK, Views.DAY]}
+            popup
+            style={{ height: "100%" }}
+          />
+        </div>
+      </div>
 
       {selectedEvent && (
-        <Card className="border-primary/20 shadow-lg">
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold">{selectedEvent.serviceType}</h3>
-                <Badge className={`${
-                  selectedEvent.status === "scheduled" ? "bg-primary/10 text-primary border-primary/20" :
-                  selectedEvent.status === "in-progress" ? "bg-warning/10 text-warning border-warning/20" :
-                  selectedEvent.status === "completed" ? "bg-success/10 text-success border-success/20" :
-                  "bg-critical/10 text-critical border-critical/20"
-                }`}>
-                  {selectedEvent.status.toUpperCase()}
-                </Badge>
+        <div className="mt-6 bg-card rounded-2xl shadow-sm border border-primary/20 p-6">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold">{selectedEvent.serviceType}</h3>
+              <Badge className={`${
+                selectedEvent.status === "scheduled" ? "bg-primary/10 text-primary border-primary/20" :
+                selectedEvent.status === "in-progress" ? "bg-warning/10 text-warning border-warning/20" :
+                selectedEvent.status === "completed" ? "bg-success/10 text-success border-success/20" :
+                "bg-critical/10 text-critical border-critical/20"
+              }`}>
+                {selectedEvent.status.toUpperCase()}
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex items-center gap-3">
+                <Wrench className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">{selectedEvent.vehicleId}</span>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Wrench className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{selectedEvent.vehicleId}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedEvent.time}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedEvent.technician}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedEvent.location}</span>
-                </div>
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <span>{selectedEvent.time}</span>
               </div>
-
-              {selectedEvent.notes && (
-                <p className="text-sm text-muted-foreground italic">
-                  Note: {selectedEvent.notes}
-                </p>
-              )}
-
-              <div className="flex gap-2 pt-2">
-                {selectedEvent.status === "scheduled" && (
-                  <>
-                    <Button size="sm" variant="outline">
-                      Reschedule
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-critical">
-                      Cancel Service
-                    </Button>
-                  </>
-                )}
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5 text-muted-foreground" />
+                <span>{selectedEvent.technician}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <MapPin className="h-5 w-5 text-muted-foreground" />
+                <span>{selectedEvent.location}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {selectedEvent.notes && (
+              <p className="text-sm text-muted-foreground italic pt-2 border-t border-border">
+                Note: {selectedEvent.notes}
+              </p>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              {selectedEvent.status === "scheduled" && (
+                <>
+                  <Button size="sm" variant="outline">
+                    Reschedule
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-critical hover:text-critical">
+                    Cancel Service
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
