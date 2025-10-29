@@ -16,6 +16,7 @@ import {
   TrendingDown,
   Lightbulb
 } from "lucide-react";
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const FleetOverview = () => {
   // Mock data - in real app this would come from API
@@ -41,6 +42,13 @@ const FleetOverview = () => {
     { vehicle: "BUS-001", type: "Oil Change", dueDate: "2024-01-15", dueKm: 5000 },
     { vehicle: "VAN-003", type: "Brake Inspection", dueDate: "2024-01-18", dueKm: 2500 },
     { vehicle: "TRK-007", type: "Annual Service", dueDate: "2024-01-20", dueKm: 8000 },
+  ];
+
+  const performanceData = [
+    { month: "Jul", downtime: 52, activeDrivers: 20, uptime: 97.5 },
+    { month: "Aug", downtime: 45, activeDrivers: 21, uptime: 98.0 },
+    { month: "Sep", downtime: 38, activeDrivers: 21, uptime: 98.5 },
+    { month: "Oct", downtime: 48, activeDrivers: 22, uptime: 98.2 },
   ];
 
   const actionableInsights = [
@@ -164,27 +172,92 @@ const FleetOverview = () => {
       </div>
 
       {/* Fleet Performance Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Fleet Performance Summary</CardTitle>
-            <CardDescription className="mt-1">Key performance indicators for this month</CardDescription>
-          </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">Fleet Performance Summary</CardTitle>
+          <CardDescription className="mt-2">Performance trends over the last 4 months</CardDescription>
+        </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <Clock className="h-8 w-8 text-warning mx-auto mb-2" />
-              <div className="text-2xl font-bold">{fleetStats.totalDowntime}h</div>
-              <p className="text-sm text-muted-foreground">Total Downtime</p>
-            </div>
-            <div className="text-center">
-              <Truck className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">{fleetStats.activeDrivers}</div>
-              <p className="text-sm text-muted-foreground">Active Drivers</p>
-            </div>
-            <div className="text-center">
-              <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
-              <div className="text-2xl font-bold">98.2%</div>
-              <p className="text-sm text-muted-foreground">Uptime Rate</p>
+          <div className="space-y-6">
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={performanceData}>
+                <defs>
+                  <linearGradient id="colorUptime" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorDowntime" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="hsl(var(--muted-foreground))"
+                  style={{ fontSize: '12px', fontWeight: 500 }}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  style={{ fontSize: '12px', fontWeight: 500 }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
+                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: '4px' }}
+                />
+                <Legend 
+                  wrapperStyle={{ paddingTop: '16px' }}
+                  iconType="circle"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="uptime" 
+                  stroke="hsl(var(--success))" 
+                  strokeWidth={2.5}
+                  fill="url(#colorUptime)"
+                  name="Uptime Rate (%)"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="downtime" 
+                  stroke="hsl(var(--warning))" 
+                  strokeWidth={2.5}
+                  fill="url(#colorDowntime)"
+                  name="Downtime (hours)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span className="font-medium">Total Downtime</span>
+                </div>
+                <div className="text-2xl font-bold">{fleetStats.totalDowntime}h</div>
+                <p className="text-xs text-muted-foreground">This month</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Truck className="h-4 w-4" />
+                  <span className="font-medium">Active Drivers</span>
+                </div>
+                <div className="text-2xl font-bold">{fleetStats.activeDrivers}</div>
+                <p className="text-xs text-muted-foreground">Currently active</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4" />
+                  <span className="font-medium">Uptime Rate</span>
+                </div>
+                <div className="text-2xl font-bold">98.2%</div>
+                <p className="text-xs text-muted-foreground">Current month</p>
+              </div>
             </div>
           </div>
         </CardContent>
